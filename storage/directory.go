@@ -1,16 +1,22 @@
 package storage
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/kuronosu/deguvon-scraper/converter"
+	"github.com/kuronosu/schema_scraper/pkg/utils"
 )
 
-type Directory map[string]map[string]interface{}
+type RawDirectory map[string]map[string]interface{}
 
-type D = Directory
+type RD = RawDirectory
 
-func (d Directory) DetaStore() []ErrorsMap {
+func (d RawDirectory) DetaStore() []ErrorsMap {
+	d, err := d.Clone()
+	if err != nil {
+		return []ErrorsMap{{err, nil}}
+	}
 	parsedAnimes, parsedGenres := converter.FromMap(d)
 	sm, err := NewDetaStorageManager(true)
 	if err != nil {
@@ -23,4 +29,29 @@ func (d Directory) DetaStore() []ErrorsMap {
 		fmt.Println(errs)
 	}
 	return nil
+}
+
+func (d RawDirectory) SaveToFiles() error {
+	d, err := d.Clone()
+	if err != nil {
+		return err
+	}
+	animes, genres := converter.FromMap(d)
+	if err := utils.WriteJson(genres, "genres.json", false); err != nil {
+		return err
+	}
+	return utils.WriteJson(animes, "animes.json", false)
+}
+
+func (d RawDirectory) Clone() (RawDirectory, error) {
+	data, err := json.Marshal(d)
+	if err != nil {
+		return nil, err
+	}
+	var clone RawDirectory
+	err = json.Unmarshal(data, &clone)
+	if err != nil {
+		return nil, err
+	}
+	return clone, nil
 }
