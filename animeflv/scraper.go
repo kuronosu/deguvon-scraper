@@ -45,7 +45,7 @@ func GetAnimesUrlsAsync() ([]string, error) {
 	return urls, nil
 }
 
-func ScrapeDirectory() *scrape.MemoryDetailsCollector {
+func ScrapeDirectory() (*scrape.MemoryDetailsCollector, map[string]string) {
 	details := scrape.NewMemoryDetailsCollector()
 	urls, err := GetAnimesUrlsAsync()
 	if err != nil {
@@ -62,11 +62,12 @@ func ScrapeDirectory() *scrape.MemoryDetailsCollector {
 	errors := scrape.ScrapeDetails(options)
 	okCount := len(details.Items)
 	errCount := len(errors)
+	trueErrors := utils.GetErrorUrlsWithoutNotFound(errors)
 	fmt.Println(
 		"[OK]", okCount,
 		"\n[Errors]", errCount,
 		"\n[Total]", okCount+errCount,
-		"\n[Errors without 404]", len(utils.GetErrorUrlsWithoutNotFound(errors)),
+		"\n[Errors without 404]", len(trueErrors),
 	)
-	return details
+	return details, trueErrors
 }

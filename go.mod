@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/deta/deta-go v1.0.0
-	github.com/kuronosu/schema_scraper v0.1.1
+	github.com/kuronosu/schema_scraper v0.1.2
 )
 
 require (

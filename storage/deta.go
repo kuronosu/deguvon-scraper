@@ -24,7 +24,6 @@ func (col *DetaCollection) uploadMany(data map[string]interface{}, verbose bool,
 	if !verbose {
 		out = nil
 	}
-	fmt.Println("Uploading " + col.name.String())
 
 	progressbarFunc(utils.ChunkMap(data, 25), "Uploading "+col.name.String(), 50, out, func(dataChunk []any) {
 		_, err := col.db.PutMany(dataChunk)
